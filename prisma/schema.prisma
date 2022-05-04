@@ -45,6 +45,7 @@ model User {
   accounts      Account[]
   role          Role      @default(USER)
   posts         Post[]
+  about         String?   @db.VarChar(280)
 }
 
 model VerificationToken {

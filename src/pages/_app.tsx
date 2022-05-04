@@ -9,6 +9,7 @@ import { trpc } from "@/lib/trpc";
 import { signIn } from "next-auth/react";
 import { Layout } from "@/components/Layout";
 import { theme } from "@/lib/chakra";
+import { PageSpinner } from "@/components/PageSpinner";
 
 function MyApp({ Component, pageProps }: AppProps) {
 	return (
@@ -36,11 +37,7 @@ function Auth({ children }: { children: React.ReactNode }) {
 
 	// Session is being fetched, or no user.
 	// If no user, useEffect() will redirect.
-	return (
-		<Flex w="full" h="full" align="center" justify="center">
-			<Spinner size="xl" />
-		</Flex>
-	);
+	return <PageSpinner />;
 }
 
 function getBaseUrl() {

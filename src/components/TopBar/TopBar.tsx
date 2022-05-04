@@ -1,8 +1,10 @@
+import { trpc } from "@/lib/trpc";
 import { Box, Button, Container, Flex } from "@chakra-ui/react";
 import { signOut } from "next-auth/react";
 import Link from "next/link";
 
 export const TopBar = () => {
+	const { data: session } = trpc.useQuery(["auth.getSession"]);
 	return (
 		<Box
 			bgGradient="linear(to-r, blue.500, blue.300, blue.500)"
@@ -25,7 +27,7 @@ export const TopBar = () => {
 						</Button>
 					</Link>
 					<Flex gap="3">
-						<Link href="/profile" passHref>
+						<Link href={`/profile/${session?.user.id}/edit`} passHref>
 							<Button as="a" variant="ghost">
 								پروفایل
 							</Button>

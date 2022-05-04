@@ -1,8 +1,8 @@
 import * as trpc from "@trpc/server";
 import { z } from "zod";
-import { createRouter } from "../createRouter";
+import { createProtectedRouter } from "../createProtectedRouter";
 
-export const postRouter = createRouter()
+export const postRouter = createProtectedRouter()
 	.query("getAll", {
 		async resolve({ ctx }) {
 			return await ctx.prisma.post.findMany({

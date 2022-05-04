@@ -12,12 +12,7 @@ import type { NextPage } from "next";
 import React, { FormEvent } from "react";
 
 const Home: NextPage = () => {
-	const { data: session, isLoading: isSessionLoading } = trpc.useQuery([
-		"auth.getSession",
-	]);
-	const { data: posts, isLoading: isPostsLoading } = trpc.useQuery([
-		"post.getAll",
-	]);
+	const { data: posts, isLoading } = trpc.useQuery(["post.getAll"]);
 	const client = trpc.useContext();
 	const { mutate, isLoading: isPosting } = trpc.useMutation("post.create", {
 		async onSuccess() {
@@ -25,7 +20,7 @@ const Home: NextPage = () => {
 		},
 	});
 	let [post, setPost] = React.useState("");
-	if (isSessionLoading || !posts || isPostsLoading) {
+	if (isLoading) {
 		return <div>Loading...</div>;
 	}
 	return (
@@ -51,9 +46,9 @@ const Home: NextPage = () => {
 				</Button>
 			</form>
 			<Box>
-				{!posts.length
+				{!posts?.length
 					? "no posts"
-					: posts.map((post) => (
+					: posts?.map((post) => (
 							<VStack key={post.id}>
 								<Text>{post.body}</Text>
 							</VStack>

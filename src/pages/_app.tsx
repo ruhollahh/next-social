@@ -3,6 +3,9 @@ import type { AppRouter } from "@/backend/routes/_app";
 import { ChakraProvider, extendTheme } from "@chakra-ui/react";
 import { withTRPC } from "@trpc/next";
 import superjson from "superjson";
+import React from "react";
+import { trpc } from "@/lib/trpc";
+import { signIn } from "next-auth/react";
 
 const theme = extendTheme({
 	styles: {
@@ -17,9 +20,28 @@ const theme = extendTheme({
 function MyApp({ Component, pageProps }: AppProps) {
 	return (
 		<ChakraProvider theme={theme}>
-			<Component {...pageProps} />
+			<Auth>
+				<Component {...pageProps} />
+			</Auth>
 		</ChakraProvider>
 	);
+}
+
+function Auth({ children }: { children: React.ReactNode }) {
+	const { data: session, isLoading } = trpc.useQuery(["auth.getSession"]);
+	const isUser = !!session?.user;
+	React.useEffect(() => {
+		if (isLoading) return; // Do nothing while loading
+		if (!isUser) signIn(); // If not authenticated, force log in
+	}, [isUser, isLoading]);
+
+	if (isUser) {
+		return <>{children}</>;
+	}
+
+	// Session is being fetched, or no user.
+	// If no user, useEffect() will redirect.
+	return <div>loading...</div>;
 }
 
 function getBaseUrl() {

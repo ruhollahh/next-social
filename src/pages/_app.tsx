@@ -1,27 +1,22 @@
 import type { AppProps } from "next/app";
 import type { AppRouter } from "@/backend/routes/_app";
-import { ChakraProvider, extendTheme } from "@chakra-ui/react";
+import { ChakraProvider, Flex, Spinner } from "@chakra-ui/react";
 import { withTRPC } from "@trpc/next";
 import superjson from "superjson";
 import React from "react";
+import "vazirmatn/Vazirmatn-font-face.css";
 import { trpc } from "@/lib/trpc";
 import { signIn } from "next-auth/react";
-
-const theme = extendTheme({
-	styles: {
-		global: {
-			"html, body, #__next": {
-				height: "100%",
-			},
-		},
-	},
-});
+import { Layout } from "@/components/Layout";
+import { theme } from "@/lib/chakra";
 
 function MyApp({ Component, pageProps }: AppProps) {
 	return (
 		<ChakraProvider theme={theme}>
 			<Auth>
-				<Component {...pageProps} />
+				<Layout>
+					<Component {...pageProps} />
+				</Layout>
 			</Auth>
 		</ChakraProvider>
 	);
@@ -41,7 +36,11 @@ function Auth({ children }: { children: React.ReactNode }) {
 
 	// Session is being fetched, or no user.
 	// If no user, useEffect() will redirect.
-	return <div>loading...</div>;
+	return (
+		<Flex w="full" h="full" align="center" justify="center">
+			<Spinner size="xl" />
+		</Flex>
+	);
 }
 
 function getBaseUrl() {

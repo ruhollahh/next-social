@@ -1,7 +1,10 @@
+import { Post } from "@/components/Post";
+import { Posts } from "@/components/Posts";
 import { trpc } from "@/lib/trpc";
 import {
 	Box,
 	Button,
+	Flex,
 	FormControl,
 	FormLabel,
 	Text,
@@ -20,11 +23,11 @@ const Home: NextPage = () => {
 		},
 	});
 	let [post, setPost] = React.useState("");
-	if (isLoading) {
+	if (isLoading || !posts) {
 		return <div>Loading...</div>;
 	}
 	return (
-		<Box>
+		<Flex direction="column" gap="10">
 			<form
 				onSubmit={(e) => {
 					e.preventDefault();
@@ -32,29 +35,27 @@ const Home: NextPage = () => {
 				}}
 			>
 				<FormControl>
-					<FormLabel htmlFor="post">Say something:</FormLabel>
+					<FormLabel htmlFor="post">یه چی بگو:</FormLabel>
 					<Textarea
 						id="post"
 						value={post}
 						onChange={(e) => setPost(e.target.value)}
-						placeholder="just chilling"
+						placeholder="بالام"
 						size="sm"
 					/>
 				</FormControl>
-				<Button type="submit" isLoading={isPosting}>
-					Post
+				<Button
+					type="submit"
+					variant="outline"
+					colorScheme="white"
+					mt="3"
+					isLoading={isPosting}
+				>
+					ارسال
 				</Button>
 			</form>
-			<Box>
-				{!posts?.length
-					? "no posts"
-					: posts?.map((post) => (
-							<VStack key={post.id}>
-								<Text>{post.body}</Text>
-							</VStack>
-					  ))}
-			</Box>
-		</Box>
+			<Posts posts={posts} />
+		</Flex>
 	);
 };
 

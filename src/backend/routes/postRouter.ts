@@ -5,7 +5,19 @@ import { createRouter } from "../createRouter";
 export const postRouter = createRouter()
 	.query("getAll", {
 		async resolve({ ctx }) {
-			return await ctx.prisma.post.findMany();
+			return await ctx.prisma.post.findMany({
+				include: {
+					user: {
+						select: {
+							name: true,
+							image: true,
+						},
+					},
+				},
+				orderBy: {
+					createdAt: "desc",
+				},
+			});
 		},
 	})
 	.middleware(({ ctx, next }) => {

@@ -1,7 +1,8 @@
 import { PageSpinner } from "@/components/PageSpinner";
+import { SelectableAvatar } from "@/components/SelectableAvatar";
 import { uploadImage } from "@/lib/cloudinary";
 import { trpc } from "@/lib/trpc";
-import { Avatar, Button, Flex, Heading } from "@chakra-ui/react";
+import { Avatar, Box, Button, Flex, Heading, Input } from "@chakra-ui/react";
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import React from "react";
@@ -13,9 +14,9 @@ const ProfileEdit: NextPage = () => {
 	]);
 	const utils = trpc.useContext();
 	const fileInputRef = React.useRef<HTMLInputElement>(null);
-	const [uploadedImage, setUploadedImage] = React.useState<
-		null | string | undefined
-	>();
+	const [uploadedImage, setUploadedImage] = React.useState<string | undefined>(
+		undefined
+	);
 	React.useEffect(() => {
 		if (!isProfileLoading && profile?.image) {
 			setUploadedImage(profile.image);
@@ -32,8 +33,8 @@ const ProfileEdit: NextPage = () => {
 		}
 	);
 	const updateUserProfileMutation = trpc.useMutation("user.edit", {
-		onSuccess() {
-			utils.invalidateQueries(["user.profile"]);
+		async onSuccess() {
+			await utils.invalidateQueries(["user.profile"]);
 		},
 	});
 	const router = useRouter();
@@ -47,27 +48,16 @@ const ProfileEdit: NextPage = () => {
 	if (userId !== profile?.id) {
 		return <div>Not Allowed!</div>;
 	}
-	console.log(isProfileLoading, profile);
 	return (
 		<Flex direction="column" gap="5">
 			<Heading>ویرایش پروفایل</Heading>
-			<Avatar name={profile.name!} src={uploadedImage!} />
-			<input
+			<SelectableAvatar
 				ref={fileInputRef}
-				type="file"
-				accept=".jpg, .jpeg, .png, .gif"
-				onChange={(event) => {
-					const files = event.target.files;
-
-					if (files && files[0]) {
-						const file = files[0];
-						if (file.size > 5242880) {
-							console.error("Image is bigger than 5MB");
-							return;
-						}
-						setUploadedImage(URL.createObjectURL(files[0]));
-					}
-				}}
+				name={profile.name!}
+				avatar={uploadedImage}
+				handleAvatarChange={(file) =>
+					setUploadedImage(URL.createObjectURL(file))
+				}
 			/>
 			<Button
 				color="gray.700"

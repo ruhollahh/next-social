@@ -55,8 +55,6 @@ function getBaseUrl() {
 	return `http://localhost:${process.env.PORT ?? 3000}`;
 }
 
-const queryClientConfig = {};
-
 export default withTRPC<AppRouter>({
 	config({ ctx }) {
 		/**

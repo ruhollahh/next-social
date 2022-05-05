@@ -17,8 +17,8 @@ const ProfileEdit: NextPage = () => {
 		null | string | undefined
 	>();
 	React.useEffect(() => {
-		if (!isProfileLoading) {
-			setUploadedImage(profile?.image);
+		if (!isProfileLoading && profile?.image) {
+			setUploadedImage(profile.image);
 		}
 	}, [isProfileLoading, profile?.image]);
 	const uploadImageMutation = useMutation(
@@ -47,9 +47,10 @@ const ProfileEdit: NextPage = () => {
 	if (userId !== profile?.id) {
 		return <div>Not Allowed!</div>;
 	}
+	console.log(isProfileLoading, profile);
 	return (
 		<Flex direction="column" gap="5">
-			<Heading>Edit Profile</Heading>
+			<Heading>ویرایش پروفایل</Heading>
 			<Avatar name={profile.name!} src={uploadedImage!} />
 			<input
 				ref={fileInputRef}
@@ -69,6 +70,7 @@ const ProfileEdit: NextPage = () => {
 				}}
 			/>
 			<Button
+				color="gray.700"
 				isLoading={
 					updateUserProfileMutation.isLoading || uploadImageMutation.isLoading
 				}

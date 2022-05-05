@@ -55,6 +55,8 @@ function getBaseUrl() {
 	return `http://localhost:${process.env.PORT ?? 3000}`;
 }
 
+const queryClientConfig = {};
+
 export default withTRPC<AppRouter>({
 	config({ ctx }) {
 		/**
@@ -65,6 +67,13 @@ export default withTRPC<AppRouter>({
 			return {
 				url: "/api/trpc",
 				transformer: superjson,
+				queryClientConfig: {
+					defaultOptions: {
+						queries: {
+							refetchOnWindowFocus: false,
+						},
+					},
+				},
 			};
 		}
 

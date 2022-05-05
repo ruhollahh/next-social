@@ -2,11 +2,26 @@ import { PageSpinner } from "@/components/PageSpinner";
 import { SelectableAvatar } from "@/components/SelectableAvatar";
 import { uploadImage } from "@/lib/cloudinary";
 import { trpc } from "@/lib/trpc";
-import { Avatar, Box, Button, Flex, Heading, Input } from "@chakra-ui/react";
+import {
+	Button,
+	Flex,
+	FormControl,
+	FormLabel,
+	Heading,
+	Input,
+	Text,
+	Textarea,
+} from "@chakra-ui/react";
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import React from "react";
 import { useMutation } from "react-query";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import {
+	EditProfile,
+	editProfileValidator,
+} from "@/shared/editProfileValidator";
 
 const ProfileEdit: NextPage = () => {
 	const { data: profile, isLoading: isProfileLoading } = trpc.useQuery([
@@ -32,11 +47,27 @@ const ProfileEdit: NextPage = () => {
 			},
 		}
 	);
-	const updateUserProfileMutation = trpc.useMutation("user.edit", {
+	const updateAvatarMutation = trpc.useMutation("user.updateAvatar", {
 		async onSuccess() {
 			await utils.invalidateQueries(["user.profile"]);
 		},
 	});
+
+	const editProfileMutation = trpc.useMutation("user.edit", {
+		async onSuccess() {
+			await utils.invalidateQueries(["user.profile"]);
+		},
+	});
+
+	const {
+		handleSubmit,
+		register,
+		formState: { errors },
+	} = useForm<EditProfile>({
+		defaultValues: { name: profile?.name, about: profile?.about },
+		resolver: zodResolver(editProfileValidator),
+	});
+
 	const router = useRouter();
 	const { userId } = router.query;
 	if (!userId) {
@@ -48,9 +79,36 @@ const ProfileEdit: NextPage = () => {
 	if (userId !== profile?.id) {
 		return <div>Not Allowed!</div>;
 	}
+	const isUpdating =
+		updateAvatarMutation.isLoading ||
+		uploadImageMutation.isLoading ||
+		editProfileMutation.isLoading;
 	return (
-		<Flex direction="column" gap="5">
-			<Heading>ویرایش پروفایل</Heading>
+		<Flex
+			as="form"
+			mx="auto"
+			direction="column"
+			gap="5"
+			align="center"
+			w="50%"
+			pb="10"
+			onSubmit={handleSubmit((data) => {
+				if (profile.image !== uploadedImage) {
+					const files = fileInputRef.current?.files;
+					if (files && files[0]) {
+						uploadImageMutation.mutate(files[0], {
+							onSuccess: (uploadedImage) => {
+								updateAvatarMutation.mutate(uploadedImage.url);
+							},
+						});
+					}
+				}
+				editProfileMutation.mutate({
+					name: data.name,
+					about: data.about,
+				});
+			})}
+		>
 			<SelectableAvatar
 				ref={fileInputRef}
 				name={profile.name!}
@@ -59,32 +117,25 @@ const ProfileEdit: NextPage = () => {
 					setUploadedImage(URL.createObjectURL(file))
 				}
 			/>
-			<Button
-				color="gray.700"
-				isLoading={
-					updateUserProfileMutation.isLoading || uploadImageMutation.isLoading
-				}
-				onClick={async () => {
-					if (profile.image === uploadedImage) {
-						return;
-					} else {
-						const files = fileInputRef.current?.files;
-
-						if (files && files[0]) {
-							uploadImageMutation.mutate(files[0], {
-								onSuccess: (uploadedImage) => {
-									updateUserProfileMutation.mutate({
-										id: profile.id,
-										name: "Ruhollah",
-										image: uploadedImage.url,
-										about: "",
-									});
-								},
-							});
-						}
-					}
-				}}
-			>
+			<FormControl isInvalid={Boolean(errors.name)}>
+				<FormLabel htmlFor="name">نام</FormLabel>
+				<Input id="name" {...register("name")} />
+				{Boolean(errors.name) && (
+					<Text pt="1" fontSize="small" color="red.400">
+						{errors.name?.message}
+					</Text>
+				)}
+			</FormControl>
+			<FormControl isInvalid={Boolean(errors.about)}>
+				<FormLabel htmlFor="about">درباره من</FormLabel>
+				<Textarea id="about" {...register("about")} />
+				{Boolean(errors.about) && (
+					<Text pt="1" fontSize="small" color="red.400">
+						{errors.about?.message}
+					</Text>
+				)}
+			</FormControl>
+			<Button color="gray.700" isLoading={isUpdating} type="submit">
 				ذخیره
 			</Button>
 		</Flex>

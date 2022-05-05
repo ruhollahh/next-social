@@ -1,3 +1,4 @@
+import { editProfileValidator } from "@/shared/editProfileValidator";
 import * as trpc from "@trpc/server";
 import { z } from "zod";
 import { createProtectedRouter } from "../createProtectedRouter";
@@ -19,25 +20,28 @@ export const userRouter = createProtectedRouter()
 		},
 	})
 	.mutation("edit", {
-		input: z.object({
-			id: z.string().cuid(),
-			name: z.string(),
-			image: z.string().url(),
-			about: z.string(),
-		}),
+		input: editProfileValidator,
 		async resolve({ input, ctx }) {
-			if (input.id !== ctx.session.user.id) {
-				throw new trpc.TRPCError({ code: "UNAUTHORIZED" });
-			}
-
-			return ctx.prisma.user.update({
+			return await ctx.prisma.user.update({
 				where: {
-					id: input.id,
+					id: ctx.session.user.id,
 				},
 				data: {
 					name: input.name,
-					image: input.image,
 					about: input.about,
+				},
+			});
+		},
+	})
+	.mutation("updateAvatar", {
+		input: z.string().url(),
+		async resolve({ input, ctx }) {
+			return await ctx.prisma.user.update({
+				where: {
+					id: ctx.session.user.id,
+				},
+				data: {
+					image: input,
 				},
 			});
 		},

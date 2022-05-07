@@ -4,6 +4,7 @@ import { signOut } from "next-auth/react";
 import Link from "next/link";
 
 export const TopBar = () => {
+	const { data: profile } = trpc.useQuery(["user.profile"]);
 	return (
 		<Box
 			bgGradient="linear(to-r, blue.500, blue.300, blue.500)"
@@ -20,13 +21,13 @@ export const TopBar = () => {
 							fontSize="lg"
 							p="2"
 							pb="1"
-							bgColor="#F1F3F8"
+							bgColor="gray.100"
 						>
 							نکست سوشال
 						</Button>
 					</Link>
 					<Flex gap="3">
-						<Link href={`/profile`} passHref>
+						<Link href={`${profile?.handle}`} passHref>
 							<Button as="a" variant="ghost">
 								پروفایل
 							</Button>

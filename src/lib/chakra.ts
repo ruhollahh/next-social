@@ -9,8 +9,11 @@ export const theme = extendTheme({
 			body: {
 				bgColor: "gray.700",
 				color: "white",
-				fontFamily: "Vazirmatn, sans-serif",
 			},
 		},
+	},
+	fonts: {
+		heading: "Vazirmatn, sans-serif",
+		body: "Vazirmatn, sans-serif",
 	},
 });

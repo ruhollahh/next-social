@@ -20,21 +20,6 @@ export const postRouter = createProtectedRouter()
 			});
 		},
 	})
-	.middleware(({ ctx, next }) => {
-		if (!ctx.session) {
-			throw new trpc.TRPCError({ code: "UNAUTHORIZED" });
-		}
-
-		const isUserAdmin = ctx.session.user.role === "ADMIN";
-
-		return next({
-			ctx: {
-				...ctx,
-				session: ctx.session,
-				isUserAdmin,
-			},
-		});
-	})
 	.mutation("create", {
 		input: z.string().min(1).max(280),
 		async resolve({ input, ctx }) {

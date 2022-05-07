@@ -1,5 +1,6 @@
 import { editProfileValidator } from "@/shared/editProfileValidator";
 import * as trpc from "@trpc/server";
+import { truncate } from "fs";
 import { z } from "zod";
 import { createProtectedRouter } from "../createProtectedRouter";
 
@@ -12,6 +13,7 @@ export const userRouter = createProtectedRouter()
 				},
 				select: {
 					id: true,
+					handle: true,
 					name: true,
 					image: true,
 					about: true,

@@ -2,7 +2,6 @@ import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import NextAuth, { NextAuthOptions } from "next-auth";
 import GithubProvider from "next-auth/providers/github";
 import { prisma } from "@/lib/prisma";
-import { Role } from "@prisma/client";
 
 export const authOptions: NextAuthOptions = {
 	adapter: PrismaAdapter(prisma),
@@ -17,12 +16,22 @@ export const authOptions: NextAuthOptions = {
 		}),
 	],
 	callbacks: {
-		async jwt({ token, user }) {
+		async jwt({ token, user, isNewUser }) {
+			if (isNewUser && user) {
+				const handle = user.email?.split("@")[0] || user.id;
+				await prisma.user.update({
+					where: {
+						id: user.id,
+					},
+					data: {
+						handle,
+					},
+				});
+			}
 			if (user) {
 				return {
 					...token,
 					userId: user.id,
-					userRole: user.role,
 				};
 			}
 			return token;
@@ -33,7 +42,6 @@ export const authOptions: NextAuthOptions = {
 				user: {
 					...session.user,
 					id: token.userId as string,
-					role: token.userRole as Role,
 				},
 			};
 		},

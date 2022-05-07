@@ -97,7 +97,6 @@ const ProfileEdit: NextPage = () => {
 			direction="column"
 			gap="5"
 			align="center"
-			w="50%"
 			pb="10"
 			onSubmit={handleSubmit((data) => {
 				if (profile.image !== uploadedImage) {

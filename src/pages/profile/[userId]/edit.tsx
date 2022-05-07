@@ -32,11 +32,35 @@ const ProfileEdit: NextPage = () => {
 	const [uploadedImage, setUploadedImage] = React.useState<string | undefined>(
 		undefined
 	);
+
+	const {
+		handleSubmit,
+		register,
+		setValue,
+		formState: { errors },
+	} = useForm<EditProfile>({
+		resolver: zodResolver(editProfileValidator),
+	});
+
 	React.useEffect(() => {
-		if (!isProfileLoading && profile?.image) {
-			setUploadedImage(profile.image);
+		if (!isProfileLoading) {
+			if (profile?.image) {
+				setUploadedImage(profile.image);
+			}
+			if (profile?.name) {
+				setValue("name", profile.name);
+			}
+			if (profile?.about) {
+				setValue("about", profile.about);
+			}
 		}
-	}, [isProfileLoading, profile?.image]);
+	}, [
+		isProfileLoading,
+		profile?.about,
+		profile?.image,
+		profile?.name,
+		setValue,
+	]);
 	const uploadImageMutation = useMutation(
 		(file: File) => {
 			return uploadImage(file);
@@ -57,15 +81,6 @@ const ProfileEdit: NextPage = () => {
 		async onSuccess() {
 			await utils.invalidateQueries(["user.profile"]);
 		},
-	});
-
-	const {
-		handleSubmit,
-		register,
-		formState: { errors },
-	} = useForm<EditProfile>({
-		defaultValues: { name: profile?.name, about: profile?.about },
-		resolver: zodResolver(editProfileValidator),
 	});
 
 	const router = useRouter();

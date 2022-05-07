@@ -15,8 +15,6 @@
 		"isolatedModules": true,
 		"jsx": "preserve",
 		"noUncheckedIndexedAccess": true,
-		"noImplicitAny": false,
-
 		"incremental": true,
 
 		"baseUrl": ".",

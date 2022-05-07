@@ -7,13 +7,11 @@ import {
 	Flex,
 	FormControl,
 	FormLabel,
-	Heading,
 	Input,
 	Text,
 	Textarea,
 } from "@chakra-ui/react";
 import type { NextPage } from "next";
-import { useRouter } from "next/router";
 import React from "react";
 import { useMutation } from "react-query";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -22,6 +20,7 @@ import {
 	EditProfile,
 	editProfileValidator,
 } from "@/shared/editProfileValidator";
+import { useRouter } from "next/router";
 
 const ProfileEdit: NextPage = () => {
 	const { data: profile, isLoading: isProfileLoading } = trpc.useQuery([
@@ -76,23 +75,16 @@ const ProfileEdit: NextPage = () => {
 			await utils.invalidateQueries(["user.profile"]);
 		},
 	});
-
+	const router = useRouter();
 	const editProfileMutation = trpc.useMutation("user.edit", {
 		async onSuccess() {
 			await utils.invalidateQueries(["user.profile"]);
+			router.push("/profile");
 		},
 	});
 
-	const router = useRouter();
-	const { userId } = router.query;
-	if (!userId) {
-		return <div>no id?</div>;
-	}
-	if (isProfileLoading) {
+	if (isProfileLoading || !profile) {
 		return <PageSpinner />;
-	}
-	if (userId !== profile?.id) {
-		return <div>Not Allowed!</div>;
 	}
 	const isUpdating =
 		updateAvatarMutation.isLoading ||

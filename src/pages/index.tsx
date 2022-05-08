@@ -1,32 +1,23 @@
-import { PageSpinner } from "@/components/PageSpinner";
-import { Post } from "@/components/Post";
-import { Posts } from "@/components/Posts";
+import { InfinitePosts } from "@/components/InfinitePosts";
 import { trpc } from "@/lib/trpc";
 import {
-	Box,
 	Button,
 	Flex,
 	FormControl,
 	FormLabel,
-	Text,
 	Textarea,
-	VStack,
 } from "@chakra-ui/react";
 import type { NextPage } from "next";
 import React from "react";
 
 const Home: NextPage = () => {
-	const { data: posts, isLoading } = trpc.useQuery(["post.getAll"]);
 	const utils = trpc.useContext();
 	const { mutate, isLoading: isPosting } = trpc.useMutation("post.create", {
 		async onSuccess() {
-			await utils.invalidateQueries(["post.getAll"]);
+			await utils.invalidateQueries(["post.infinite"]);
 		},
 	});
 	let [post, setPost] = React.useState("");
-	if (isLoading || !posts) {
-		return <PageSpinner />;
-	}
 	return (
 		<Flex direction="column" gap="10">
 			<form
@@ -55,7 +46,7 @@ const Home: NextPage = () => {
 					ارسال
 				</Button>
 			</form>
-			<Posts posts={posts} />
+			<InfinitePosts />
 		</Flex>
 	);
 };

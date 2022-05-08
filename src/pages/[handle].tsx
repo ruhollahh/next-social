@@ -1,5 +1,5 @@
 import { PageSpinner } from "@/components/PageSpinner";
-import { Posts } from "@/components/Posts";
+import { InfinitePosts } from "@/components/InfinitePosts";
 import { trpc } from "@/lib/trpc";
 import { Avatar, Box, Button, Flex, Heading, Text } from "@chakra-ui/react";
 import type { NextPage } from "next";
@@ -14,17 +14,13 @@ const Profile: NextPage = () => {
 		"user.profile",
 		{ handle },
 	]);
-	const { data: posts, isLoading: isPostsLoading } = trpc.useQuery([
-		"post.getAll",
-		{ handle },
-	]);
 	const { data: session } = trpc.useQuery(["auth.getSession"]);
 	React.useEffect(() => {
 		if (!isProfileLoading && !profile) {
 			router.push("/404");
 		}
 	}, [isProfileLoading, profile, router]);
-	if (isProfileLoading || !profile || isPostsLoading || !posts) {
+	if (isProfileLoading || !profile) {
 		return <PageSpinner />;
 	}
 	return (
@@ -51,7 +47,7 @@ const Profile: NextPage = () => {
 					</Button>
 				</Link>
 			)}
-			<Posts posts={posts} />
+			<InfinitePosts />
 		</Flex>
 	);
 };

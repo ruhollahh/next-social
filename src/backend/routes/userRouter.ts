@@ -6,11 +6,19 @@ import { createProtectedRouter } from "../createProtectedRouter";
 
 export const userRouter = createProtectedRouter()
 	.query("profile", {
+		input: z
+			.object({
+				handle: z.string(),
+			})
+			.optional(),
 		async resolve({ input, ctx }) {
+			const where = input?.handle
+				? {
+						handle: input?.handle,
+				  }
+				: { id: ctx.session.user.id };
 			return await ctx.prisma.user.findUnique({
-				where: {
-					id: ctx.session.user.id,
-				},
+				where,
 				select: {
 					id: true,
 					handle: true,

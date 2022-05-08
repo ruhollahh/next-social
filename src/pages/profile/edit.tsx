@@ -70,16 +70,12 @@ const ProfileEdit: NextPage = () => {
 			},
 		}
 	);
-	const updateAvatarMutation = trpc.useMutation("user.updateAvatar", {
-		async onSuccess() {
-			await utils.invalidateQueries(["user.profile"]);
-		},
-	});
+	const updateAvatarMutation = trpc.useMutation("user.updateAvatar");
 	const router = useRouter();
 	const editProfileMutation = trpc.useMutation("user.edit", {
 		async onSuccess() {
 			await utils.invalidateQueries(["user.profile"]);
-			router.push("/profile");
+			router.push(`/${profile?.handle}`);
 		},
 	});
 
@@ -104,15 +100,23 @@ const ProfileEdit: NextPage = () => {
 					if (files && files[0]) {
 						uploadImageMutation.mutate(files[0], {
 							onSuccess: (uploadedImage) => {
-								updateAvatarMutation.mutate(uploadedImage.url);
+								updateAvatarMutation.mutate(uploadedImage.url, {
+									onSuccess() {
+										editProfileMutation.mutate({
+											name: data.name,
+											about: data.about,
+										});
+									},
+								});
 							},
 						});
 					}
+				} else {
+					editProfileMutation.mutate({
+						name: data.name,
+						about: data.about,
+					});
 				}
-				editProfileMutation.mutate({
-					name: data.name,
-					about: data.about,
-				});
 			})}
 		>
 			<SelectableAvatar

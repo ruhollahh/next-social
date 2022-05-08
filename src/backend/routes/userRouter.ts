@@ -6,7 +6,7 @@ import { createProtectedRouter } from "../createProtectedRouter";
 
 export const userRouter = createProtectedRouter()
 	.query("profile", {
-		async resolve({ ctx }) {
+		async resolve({ input, ctx }) {
 			return await ctx.prisma.user.findUnique({
 				where: {
 					id: ctx.session.user.id,

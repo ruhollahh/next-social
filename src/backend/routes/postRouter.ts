@@ -4,8 +4,21 @@ import { createProtectedRouter } from "../createProtectedRouter";
 
 export const postRouter = createProtectedRouter()
 	.query("getAll", {
-		async resolve({ ctx }) {
+		input: z
+			.object({
+				handle: z.string(),
+			})
+			.optional(),
+		async resolve({ input, ctx }) {
+			const where = input?.handle
+				? {
+						user: {
+							handle: input?.handle,
+						},
+				  }
+				: {};
 			return await ctx.prisma.post.findMany({
+				where,
 				include: {
 					user: {
 						select: {

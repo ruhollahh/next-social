@@ -4,13 +4,22 @@ import { trpc } from "@/lib/trpc";
 import { Avatar, Box, Button, Flex, Heading, Text } from "@chakra-ui/react";
 import type { NextPage } from "next";
 import Link from "next/link";
+import { useRouter } from "next/router";
 
 const Profile: NextPage = () => {
+	const router = useRouter();
+	const handle = String(router.query.handle);
+	if (!handle) {
+		return null;
+	}
 	const { data: profile, isLoading: isProfileLoading } = trpc.useQuery([
 		"user.profile",
 	]);
-
-	if (isProfileLoading || !profile) {
+	const { data: posts, isLoading: isPostsLoading } = trpc.useQuery([
+		"post.getAll",
+		{ handle },
+	]);
+	if (isProfileLoading || !profile || isPostsLoading || !posts) {
 		return <PageSpinner />;
 	}
 	return (
@@ -35,7 +44,7 @@ const Profile: NextPage = () => {
 					ویرایش
 				</Button>
 			</Link> */}
-			{/* <Posts posts={posts} /> */}
+			<Posts posts={posts} />
 		</Flex>
 	);
 };

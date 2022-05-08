@@ -28,20 +28,22 @@ export const authOptions: NextAuthOptions = {
 					},
 				});
 			}
+			const { name, email, picture, sub, ...trimedToken } = token;
 			if (user) {
 				return {
-					...token,
+					...trimedToken,
 					userId: user.id,
+					handle: user.handle,
 				};
 			}
-			return token;
+			return trimedToken;
 		},
 		async session({ session, token }) {
 			return {
 				...session,
 				user: {
-					...session.user,
 					id: token.userId as string,
+					handle: token.handle as string,
 				},
 			};
 		},

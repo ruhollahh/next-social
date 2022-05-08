@@ -4,7 +4,7 @@ import { signOut } from "next-auth/react";
 import Link from "next/link";
 
 export const TopBar = () => {
-	const { data: profile } = trpc.useQuery(["user.profile"]);
+	const { data: session } = trpc.useQuery(["auth.getSession"]);
 	return (
 		<Box
 			bgGradient="linear(to-r, blue.500, blue.300, blue.500)"
@@ -27,7 +27,7 @@ export const TopBar = () => {
 						</Button>
 					</Link>
 					<Flex gap="3">
-						<Link href={`${profile?.handle}`} passHref>
+						<Link href={`/${session?.user.handle}`} passHref>
 							<Button as="a" variant="ghost">
 								پروفایل
 							</Button>

@@ -1,13 +1,112 @@
-import { Avatar, Box, Button, Flex, Text } from "@chakra-ui/react";
+import { Avatar, Box, IconButton, Flex, Text, Button } from "@chakra-ui/react";
+import { AiFillHeart, AiOutlineHeart } from "react-icons/ai";
 import moment from "jalali-moment";
-import type { inferQueryOutput } from "@/lib/trpc";
+import { inferQueryOutput, trpc } from "@/lib/trpc";
 
 export const Post = ({
 	post,
+	handle,
 	...rest
 }: {
 	post: inferQueryOutput<"post.infinite">["posts"][0];
+	handle?: string;
 }) => {
+	const utils = trpc.useContext();
+	const likeMutation = trpc.useMutation("post.like", {
+		async onMutate(likedPostId) {
+			await utils.cancelQuery(["post.infinite"]);
+			const prevPosts = utils.getInfiniteQueryData([
+				"post.infinite",
+				{ limit: 10, handle },
+			]);
+
+			utils.setInfiniteQueryData(
+				["post.infinite", { limit: 10, handle }],
+				(data) => {
+					if (!data) {
+						return {
+							pages: [],
+							pageParams: [],
+						};
+					}
+
+					return {
+						...data,
+						pages: data.pages.map((page) => ({
+							...page,
+							posts: page.posts.map((post) =>
+								post.id === likedPostId
+									? {
+											...post,
+											likeCount: post.likeCount + 1,
+											isLikedByMe: true,
+									  }
+									: post
+							),
+						})),
+					};
+				}
+			);
+
+			return { prevPosts };
+		},
+		onError: (_err, _id, context: any) => {
+			if (context?.prevPosts) {
+				utils.setInfiniteQueryData(
+					["post.infinite", { limit: 10, handle }],
+					context.prevPosts
+				);
+			}
+		},
+	});
+
+	const unlikeMutation = trpc.useMutation("post.unlike", {
+		async onMutate(unLikedPostId) {
+			await utils.cancelQuery(["post.infinite"]);
+			const prevPosts = utils.getInfiniteQueryData([
+				"post.infinite",
+				{ limit: 10, handle },
+			]);
+
+			utils.setInfiniteQueryData(
+				["post.infinite", { limit: 10, handle }],
+				(data) => {
+					if (!data) {
+						return {
+							pages: [],
+							pageParams: [],
+						};
+					}
+
+					return {
+						...data,
+						pages: data.pages.map((page) => ({
+							...page,
+							posts: page.posts.map((post) =>
+								post.id === unLikedPostId
+									? {
+											...post,
+											likeCount: post.likeCount - 1,
+											isLikedByMe: false,
+									  }
+									: post
+							),
+						})),
+					};
+				}
+			);
+
+			return { prevPosts };
+		},
+		onError: (_err, _id, context: any) => {
+			if (context?.prevPosts) {
+				utils.setInfiniteQueryData(
+					["post.infinite", { limit: 10, handle }],
+					context.prevPosts
+				);
+			}
+		},
+	});
 	return (
 		<Flex
 			direction="column"
@@ -30,9 +129,25 @@ export const Post = ({
 			<Box>
 				<Text>{post.body}</Text>
 			</Box>
-			<Box>
-				<Button>Like</Button>
-			</Box>
+			<Flex alignSelf="flex-end">
+				{post.isLikedByMe ? (
+					<Button
+						aria-label="unlike"
+						rightIcon={<AiFillHeart fontSize={24} />}
+						onClick={() => unlikeMutation.mutate(post.id)}
+					>
+						{post.likeCount}
+					</Button>
+				) : (
+					<Button
+						aria-label="like"
+						rightIcon={<AiOutlineHeart fontSize={24} />}
+						onClick={() => likeMutation.mutate(post.id)}
+					>
+						{post.likeCount}
+					</Button>
+				)}
+			</Flex>
 		</Flex>
 	);
 };

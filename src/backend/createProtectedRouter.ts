@@ -7,13 +7,10 @@ export function createProtectedRouter() {
 			throw new trpc.TRPCError({ code: "UNAUTHORIZED" });
 		}
 
-		const isUserAdmin = ctx.session.user.role === "ADMIN";
-
 		return next({
 			ctx: {
 				...ctx,
 				session: ctx.session,
-				isUserAdmin,
 			},
 		});
 	});

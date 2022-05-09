@@ -19,7 +19,7 @@ export const postRouter = createProtectedRouter()
 						},
 				  }
 				: {};
-			const posts = await ctx.prisma.post.findMany({
+			const prismaPosts = await ctx.prisma.post.findMany({
 				take: limit + 1,
 				cursor: cursor ? { id: cursor } : undefined,
 				where,
@@ -30,16 +30,37 @@ export const postRouter = createProtectedRouter()
 							image: true,
 						},
 					},
+					likes: {
+						where: {
+							user: {
+								id: ctx.session.user.id,
+							},
+						},
+					},
+					_count: {
+						select: {
+							likes: true,
+						},
+					},
 				},
 				orderBy: {
 					createdAt: "desc",
 				},
 			});
 			let nextCursor: typeof cursor | null = null;
-			if (posts.length > limit) {
-				const nextItem = posts.pop();
+			if (prismaPosts.length > limit) {
+				const nextItem = prismaPosts.pop();
 				nextCursor = nextItem!.id;
 			}
+
+			const posts = prismaPosts.map((post) => {
+				const { likes, _count, ...trimedPost } = post;
+				return {
+					...trimedPost,
+					isLikedByMe: post.likes.length > 0,
+					likeCount: post._count.likes,
+				};
+			});
 
 			return {
 				posts,
@@ -57,6 +78,38 @@ export const postRouter = createProtectedRouter()
 						connect: {
 							id: ctx.session.user.id,
 						},
+					},
+				},
+			});
+		},
+	})
+	.mutation("like", {
+		input: z.string().cuid(),
+		async resolve({ input, ctx }) {
+			return ctx.prisma.like.create({
+				data: {
+					post: {
+						connect: {
+							id: input,
+						},
+					},
+					user: {
+						connect: {
+							id: ctx.session.user.id,
+						},
+					},
+				},
+			});
+		},
+	})
+	.mutation("unlike", {
+		input: z.string().cuid(),
+		async resolve({ input, ctx }) {
+			return ctx.prisma.like.delete({
+				where: {
+					postId_userId: {
+						postId: input,
+						userId: ctx.session.user.id,
 					},
 				},
 			});

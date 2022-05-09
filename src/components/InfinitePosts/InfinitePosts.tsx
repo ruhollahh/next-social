@@ -28,7 +28,9 @@ export const InfinitePosts = ({ handle }: { handle?: string }) => {
 		>
 			<Flex direction="column" gap="5" pb="5">
 				{data.pages.map(({ posts }) =>
-					posts.map((post) => <Post key={post.id} post={post} />)
+					posts.map((post) => (
+						<Post key={post.id} post={post} handle={handle} />
+					))
 				)}
 			</Flex>
 		</InfiniteScroll>

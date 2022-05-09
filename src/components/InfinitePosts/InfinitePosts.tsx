@@ -10,6 +10,7 @@ export const InfinitePosts = ({ handle }: { handle?: string }) => {
 			"post.infinite",
 			{
 				limit: 10,
+				handle,
 			},
 		],
 		{

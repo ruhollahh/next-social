@@ -20,7 +20,7 @@ const Profile: NextPage = () => {
 			router.push("/404");
 		}
 	}, [isProfileLoading, profile, router]);
-	if (isProfileLoading || !profile) {
+	if (isProfileLoading || !profile || !session) {
 		return <PageSpinner />;
 	}
 	return (
@@ -47,7 +47,7 @@ const Profile: NextPage = () => {
 					</Button>
 				</Link>
 			)}
-			<InfinitePosts />
+			<InfinitePosts handle={session.user.handle} />
 		</Flex>
 	);
 };

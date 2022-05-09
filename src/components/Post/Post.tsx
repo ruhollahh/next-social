@@ -1,4 +1,4 @@
-import { Avatar, Box, Flex, Text } from "@chakra-ui/react";
+import { Avatar, Box, Button, Flex, Text } from "@chakra-ui/react";
 import moment from "jalali-moment";
 import type { inferQueryOutput } from "@/lib/trpc";
 
@@ -6,7 +6,7 @@ export const Post = ({
 	post,
 	...rest
 }: {
-	post: inferQueryOutput<"post.getAll">[0];
+	post: inferQueryOutput<"post.infinite">["posts"][0];
 }) => {
 	return (
 		<Flex
@@ -29,6 +29,9 @@ export const Post = ({
 			</Flex>
 			<Box>
 				<Text>{post.body}</Text>
+			</Box>
+			<Box>
+				<Button>Like</Button>
 			</Box>
 		</Flex>
 	);

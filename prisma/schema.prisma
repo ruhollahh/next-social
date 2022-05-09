@@ -41,6 +41,7 @@ model User {
   handle        String?   @unique
   posts         Post[]
   about         String?   @db.VarChar(280)
+  likes         Like[]
 }
 
 model VerificationToken {
@@ -56,6 +57,21 @@ model Post {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   body      String   @db.VarChar(280)
-  user      User     @relation(fields: [userId], references: [id])
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    String
+  likes     Like[]
+
+  @@index([userId])
+}
+
+model Like {
+  createdAt DateTime @default(now())
+  post      Post     @relation(fields: [postId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  postId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  userId    String
+
+  @@id([postId, userId])
+  @@index([postId])
+  @@index([userId])
 }

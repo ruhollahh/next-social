@@ -3,18 +3,19 @@ import { AiFillHeart, AiOutlineHeart } from "react-icons/ai";
 import moment from "jalali-moment";
 import { inferQueryOutput, trpc } from "@/lib/trpc";
 
+export type Post = inferQueryOutput<"post.infinite">["posts"][0];
+export type PostProps = {
+	post: Post;
+	userHandle?: string;
+	handleShowComments: (post: Post) => void;
+};
+
 export const Post = ({
 	post,
 	userHandle,
 	handleShowComments,
 	...rest
-}: {
-	post: inferQueryOutput<"post.infinite">["posts"][0];
-	userHandle?: string;
-	handleShowComments: (
-		post: inferQueryOutput<"post.infinite">["posts"][0]
-	) => void;
-}) => {
+}: PostProps) => {
 	const utils = trpc.useContext();
 	const likeMutation = trpc.useMutation("post.like", {
 		async onMutate(likedPostId) {

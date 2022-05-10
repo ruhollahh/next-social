@@ -2,7 +2,7 @@ import { inferQueryOutput, trpc } from "@/lib/trpc";
 import { Flex } from "@chakra-ui/react";
 import { PageSpinner } from "../PageSpinner";
 import InfiniteScroll from "react-infinite-scroller";
-import { Post } from "../Post/Post";
+import { Post } from "../Post";
 import React from "react";
 
 export const InfinitePosts = ({ userHandle }: { userHandle?: string }) => {
@@ -19,18 +19,16 @@ export const InfinitePosts = ({ userHandle }: { userHandle?: string }) => {
 		}
 	);
 	const [postWithComments, setPostWithComments] = React.useState<
-		undefined | inferQueryOutput<"post.infinite">["posts"][0]
+		undefined | Post
 	>();
-	const handleShowComments = (
-		post: inferQueryOutput<"post.infinite">["posts"][0]
-	) => {
+	const handleShowComments = (post: Post) => {
 		window.history.pushState({}, "", `/post/${post.id}`);
 		setPostWithComments(post);
 	};
 	const handleCloseComments = () => {
 		window.history.back();
 	};
-	console.log(postWithComments);
+
 	React.useEffect(() => {
 		const handlePopState = () => {
 			if (window.location.toString().includes("/post")) {

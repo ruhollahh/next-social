@@ -79,6 +79,7 @@ model Like {
 }
 
 model Comment {
+  id        String   @id @default(cuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   body      String   @db.VarChar(280)
@@ -87,7 +88,6 @@ model Comment {
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    String
 
-  @@id([postId, userId])
   @@index([postId])
   @@index([userId])
 }

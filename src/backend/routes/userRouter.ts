@@ -1,6 +1,4 @@
 import { editProfileValidator } from "@/shared/editProfileValidator";
-import * as trpc from "@trpc/server";
-import { truncate } from "fs";
 import { z } from "zod";
 import { createProtectedRouter } from "../createProtectedRouter";
 

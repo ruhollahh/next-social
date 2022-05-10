@@ -1,15 +1,19 @@
-import { Avatar, Box, IconButton, Flex, Text, Button } from "@chakra-ui/react";
+import { Avatar, Box, Flex, Text, Button } from "@chakra-ui/react";
 import { AiFillHeart, AiOutlineHeart } from "react-icons/ai";
 import moment from "jalali-moment";
 import { inferQueryOutput, trpc } from "@/lib/trpc";
 
 export const Post = ({
 	post,
-	handle,
+	userHandle,
+	handleShowComments,
 	...rest
 }: {
 	post: inferQueryOutput<"post.infinite">["posts"][0];
-	handle?: string;
+	userHandle?: string;
+	handleShowComments: (
+		post: inferQueryOutput<"post.infinite">["posts"][0]
+	) => void;
 }) => {
 	const utils = trpc.useContext();
 	const likeMutation = trpc.useMutation("post.like", {
@@ -17,11 +21,11 @@ export const Post = ({
 			await utils.cancelQuery(["post.infinite"]);
 			const prevPosts = utils.getInfiniteQueryData([
 				"post.infinite",
-				{ limit: 10, handle },
+				{ limit: 10, userHandle },
 			]);
 
 			utils.setInfiniteQueryData(
-				["post.infinite", { limit: 10, handle }],
+				["post.infinite", { limit: 10, userHandle }],
 				(data) => {
 					if (!data) {
 						return {
@@ -53,7 +57,7 @@ export const Post = ({
 		onError: (_err, _id, context: any) => {
 			if (context?.prevPosts) {
 				utils.setInfiniteQueryData(
-					["post.infinite", { limit: 10, handle }],
+					["post.infinite", { limit: 10, userHandle }],
 					context.prevPosts
 				);
 			}
@@ -65,11 +69,11 @@ export const Post = ({
 			await utils.cancelQuery(["post.infinite"]);
 			const prevPosts = utils.getInfiniteQueryData([
 				"post.infinite",
-				{ limit: 10, handle },
+				{ limit: 10, userHandle },
 			]);
 
 			utils.setInfiniteQueryData(
-				["post.infinite", { limit: 10, handle }],
+				["post.infinite", { limit: 10, userHandle }],
 				(data) => {
 					if (!data) {
 						return {
@@ -101,7 +105,7 @@ export const Post = ({
 		onError: (_err, _id, context: any) => {
 			if (context?.prevPosts) {
 				utils.setInfiniteQueryData(
-					["post.infinite", { limit: 10, handle }],
+					["post.infinite", { limit: 10, userHandle }],
 					context.prevPosts
 				);
 			}
@@ -147,6 +151,7 @@ export const Post = ({
 						{post.likeCount}
 					</Button>
 				)}
+				<Button onClick={() => handleShowComments(post)}>comments</Button>
 			</Flex>
 		</Flex>
 	);

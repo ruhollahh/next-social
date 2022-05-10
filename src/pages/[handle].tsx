@@ -47,7 +47,7 @@ const Profile: NextPage = () => {
 					</Button>
 				</Link>
 			)}
-			<InfinitePosts handle={session.user.handle} />
+			<InfinitePosts userHandle={session.user.handle} />
 		</Flex>
 	);
 };

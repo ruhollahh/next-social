@@ -5,17 +5,17 @@ import { createProtectedRouter } from "../createProtectedRouter";
 export const postRouter = createProtectedRouter()
 	.query("infinite", {
 		input: z.object({
-			handle: z.string().optional(),
+			userHandle: z.string().optional(),
 			limit: z.number().min(1).max(100).nullish(),
 			cursor: z.string().nullish(),
 		}),
 		async resolve({ input, ctx }) {
 			const limit = input.limit ?? 10;
 			const { cursor } = input;
-			const where = input?.handle
+			const where = input?.userHandle
 				? {
 						user: {
-							handle: input?.handle,
+							handle: input?.userHandle,
 						},
 				  }
 				: {};

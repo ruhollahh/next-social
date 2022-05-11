@@ -1,7 +1,8 @@
+import * as trpc from "@trpc/server";
 import { z } from "zod";
 import { createProtectedRouter } from "../createProtectedRouter";
 
-export const authRouter = createProtectedRouter()
+export const commentRouter = createProtectedRouter()
 	.query("infinite", {
 		input: z.object({
 			postId: z.string().cuid(),
@@ -49,7 +50,7 @@ export const authRouter = createProtectedRouter()
 			postId: z.string().cuid(),
 		}),
 		async resolve({ input, ctx }) {
-			return ctx.prisma.comment.create({
+			return await ctx.prisma.comment.create({
 				data: {
 					body: input.body,
 					post: {
@@ -62,6 +63,28 @@ export const authRouter = createProtectedRouter()
 							id: ctx.session.user.id,
 						},
 					},
+				},
+			});
+		},
+	})
+	.mutation("delete", {
+		input: z.string().cuid(),
+		async resolve({ input, ctx }) {
+			const comment = await ctx.prisma.comment.findUnique({
+				where: {
+					id: input,
+				},
+			});
+			if (!comment) {
+				throw new trpc.TRPCError({ code: "NOT_FOUND" });
+			}
+			if (comment.userId !== ctx.session.user.id) {
+				throw new trpc.TRPCError({ code: "UNAUTHORIZED" });
+			}
+
+			return await ctx.prisma.comment.delete({
+				where: {
+					id: input,
 				},
 			});
 		},

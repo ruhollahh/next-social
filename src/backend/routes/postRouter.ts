@@ -39,6 +39,7 @@ export const postRouter = createProtectedRouter()
 					_count: {
 						select: {
 							likes: true,
+							comments: true,
 						},
 					},
 				},
@@ -58,6 +59,7 @@ export const postRouter = createProtectedRouter()
 					...trimedPost,
 					isLikedByMe: post.likes.length > 0,
 					likeCount: post._count.likes,
+					commentCount: post._count.comments,
 				};
 			});
 

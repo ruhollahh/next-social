@@ -16,7 +16,7 @@
 		"jsx": "preserve",
 		"noUncheckedIndexedAccess": true,
 		"incremental": true,
-
+		"noImplicitAny": false,
 		"baseUrl": ".",
 		"paths": {
 			"@/*": ["./src/*"]

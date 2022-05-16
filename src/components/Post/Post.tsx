@@ -2,6 +2,7 @@ import { Avatar, Box, Flex, Text, Button } from "@chakra-ui/react";
 import { AiFillHeart, AiOutlineHeart, AiOutlineComment } from "react-icons/ai";
 import moment from "jalali-moment";
 import { InferQueryOutput, InferQueryPathAndInput, trpc } from "@/lib/trpc";
+import Link from "next/link";
 
 export type Post = InferQueryOutput<"post.infinite">["posts"][0];
 export type PostProps = {
@@ -107,7 +108,11 @@ export const Post = ({
 			<Flex gap="3" align="center">
 				<Avatar name={post.user.name!} src={post.user.image!} />
 				<Box>
-					<Text fontSize="sm">{post.user.name}</Text>
+					<Text fontSize="sm">
+						<Link href={`/${post.user.handle}`}>
+							<a>{post.user.name}</a>
+						</Link>
+					</Text>
 					<Text fontSize="12px" fontStyle="italic">
 						{moment(post.createdAt, "YYYY/MM/DD").locale("fa").fromNow()}
 					</Text>

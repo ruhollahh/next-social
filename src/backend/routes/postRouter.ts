@@ -25,6 +25,7 @@ export const postRouter = createProtectedRouter()
 				include: {
 					user: {
 						select: {
+							handle: true,
 							name: true,
 							image: true,
 						},

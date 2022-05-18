@@ -12,12 +12,13 @@ import React from "react";
 
 const Home: NextPage = () => {
 	const utils = trpc.useContext();
+	let [post, setPost] = React.useState("");
 	const { mutate, isLoading: isPosting } = trpc.useMutation("post.create", {
 		async onSuccess() {
 			await utils.invalidateQueries(["post.infinite"]);
+			setPost("");
 		},
 	});
-	let [post, setPost] = React.useState("");
 	return (
 		<Flex direction="column" gap="10" bgColor="gray.100" p="5" rounded="md">
 			<Flex direction="column" gap="10">

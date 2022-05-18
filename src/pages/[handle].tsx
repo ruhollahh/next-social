@@ -24,25 +24,18 @@ const Profile: NextPage = () => {
 		return <PageSpinner />;
 	}
 	return (
-		<Flex
-			direction="column"
-			gap="10"
-			bgColor="gray.100"
-			p="5"
-			color="gray.700"
-			rounded="md"
-		>
+		<Flex direction="column" gap="10" bgColor="gray.100" p="5" rounded="md">
 			<Heading fontSize="xl" alignSelf="center">
 				پروفایل
 			</Heading>
-			<Flex direction="column" gap="3" alignItems="center">
+			<Flex direction="column" gap="3" alignItems="center" color="gray.700">
 				<Avatar name={profile.name!} src={profile.image!} size="lg" />
 				<Text fontSize="lg">{profile.name}</Text>
 				<Text>{profile.about!}</Text>
 			</Flex>
 			{handle === session?.user.handle && (
 				<Link href="/profile/edit" passHref>
-					<Button as="a" color="gray.700">
+					<Button as="a" color="#001D6E" alignSelf="center">
 						ویرایش
 					</Button>
 				</Link>

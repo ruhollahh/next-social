@@ -6,10 +6,7 @@ import Link from "next/link";
 export const TopBar = () => {
 	const { data: session } = trpc.useQuery(["auth.getSession"]);
 	return (
-		<Box
-			bgGradient="linear(to-r, blue.500, blue.300, blue.500)"
-			color="gray.700"
-		>
+		<Box bgColor="#7FB5FF">
 			<Container maxW="container.lg">
 				<Flex justify="space-between" align="center" gap="5" py="2">
 					<Link href="/" passHref>

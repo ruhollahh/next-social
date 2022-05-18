@@ -7,8 +7,8 @@ export const theme = extendTheme({
 				height: "100%",
 			},
 			body: {
-				bgColor: "gray.700",
-				color: "white",
+				bgColor: "#C4DDFF",
+				color: "#001D6E",
 			},
 		},
 	},

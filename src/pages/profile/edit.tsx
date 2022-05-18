@@ -7,6 +7,7 @@ import {
 	Flex,
 	FormControl,
 	FormLabel,
+	Heading,
 	Input,
 	Text,
 	Textarea,
@@ -87,67 +88,71 @@ const ProfileEdit: NextPage = () => {
 		uploadImageMutation.isLoading ||
 		editProfileMutation.isLoading;
 	return (
-		<Flex
-			as="form"
-			mx="auto"
-			direction="column"
-			gap="5"
-			align="center"
-			pb="10"
-			onSubmit={handleSubmit((data) => {
-				if (profile.image !== uploadedImage) {
-					const files = fileInputRef.current?.files;
-					if (files && files[0]) {
-						uploadImageMutation.mutate(files[0], {
-							onSuccess: (uploadedImage) => {
-								updateAvatarMutation.mutate(uploadedImage.url, {
-									onSuccess() {
-										editProfileMutation.mutate({
-											name: data.name,
-											about: data.about,
-										});
-									},
-								});
-							},
+		<Flex direction="column" gap="10" bgColor="gray.100" p="5" rounded="md">
+			<Heading fontSize="xl" alignSelf="center">
+				ویرایش پروفایل
+			</Heading>
+			<Flex
+				as="form"
+				direction="column"
+				gap="5"
+				align="center"
+				color="gray.700"
+				onSubmit={handleSubmit((data) => {
+					if (profile.image !== uploadedImage) {
+						const files = fileInputRef.current?.files;
+						if (files && files[0]) {
+							uploadImageMutation.mutate(files[0], {
+								onSuccess: (uploadedImage) => {
+									updateAvatarMutation.mutate(uploadedImage.url, {
+										onSuccess() {
+											editProfileMutation.mutate({
+												name: data.name,
+												about: data.about,
+											});
+										},
+									});
+								},
+							});
+						}
+					} else {
+						editProfileMutation.mutate({
+							name: data.name,
+							about: data.about,
 						});
 					}
-				} else {
-					editProfileMutation.mutate({
-						name: data.name,
-						about: data.about,
-					});
-				}
-			})}
-		>
-			<SelectableAvatar
-				ref={fileInputRef}
-				name={profile.name!}
-				avatar={uploadedImage}
-				handleAvatarChange={(file) =>
-					setUploadedImage(URL.createObjectURL(file))
-				}
-			/>
-			<FormControl isInvalid={Boolean(errors.name)}>
-				<FormLabel htmlFor="name">نام</FormLabel>
-				<Input id="name" {...register("name")} />
-				{Boolean(errors.name) && (
-					<Text pt="1" fontSize="small" color="red.400">
-						{errors.name?.message}
-					</Text>
-				)}
-			</FormControl>
-			<FormControl isInvalid={Boolean(errors.about)}>
-				<FormLabel htmlFor="about">درباره من</FormLabel>
-				<Textarea id="about" {...register("about")} />
-				{Boolean(errors.about) && (
-					<Text pt="1" fontSize="small" color="red.400">
-						{errors.about?.message}
-					</Text>
-				)}
-			</FormControl>
-			<Button color="gray.700" isLoading={isUpdating} type="submit">
-				ذخیره
-			</Button>
+				})}
+			>
+				<SelectableAvatar
+					ref={fileInputRef}
+					name={profile.name!}
+					avatar={uploadedImage}
+					handleAvatarChange={(file) =>
+						setUploadedImage(URL.createObjectURL(file))
+					}
+				/>
+				<FormControl isInvalid={Boolean(errors.name)}>
+					<FormLabel htmlFor="name">نام</FormLabel>
+					<Input id="name" {...register("name")} />
+					{Boolean(errors.name) && (
+						<Text pt="1" fontSize="small" color="red.400">
+							{errors.name?.message}
+						</Text>
+					)}
+				</FormControl>
+				<FormControl isInvalid={Boolean(errors.about)}>
+					<FormLabel htmlFor="about">درباره من</FormLabel>
+					<Textarea id="about" {...register("about")} />
+					{Boolean(errors.about) && (
+						<Text pt="1" fontSize="small" color="red.400">
+							{errors.about?.message}
+						</Text>
+					)}
+				</FormControl>
+				<Button color="#001D6E" isLoading={isUpdating} type="submit">
+					ذخیره
+				</Button>
+			</Flex>
 		</Flex>
 	);
 };

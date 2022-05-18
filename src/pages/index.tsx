@@ -19,34 +19,38 @@ const Home: NextPage = () => {
 	});
 	let [post, setPost] = React.useState("");
 	return (
-		<Flex direction="column" gap="10">
-			<form
-				onSubmit={(e) => {
-					e.preventDefault();
-					mutate(post);
-				}}
-			>
-				<FormControl>
-					<FormLabel htmlFor="post">یه چی بگو:</FormLabel>
-					<Textarea
-						id="post"
-						value={post}
-						onChange={(e) => setPost(e.target.value)}
-						placeholder="یه چی"
-						size="sm"
-					/>
-				</FormControl>
-				<Button
-					type="submit"
-					variant="outline"
-					colorScheme="white"
-					mt="3"
-					isLoading={isPosting}
+		<Flex direction="column" gap="10" bgColor="gray.100" p="5" rounded="md">
+			<Flex direction="column" gap="10">
+				<form
+					onSubmit={(e) => {
+						e.preventDefault();
+						mutate(post);
+					}}
 				>
-					ارسال
-				</Button>
-			</form>
-			<InfinitePosts />
+					<FormControl>
+						<FormLabel htmlFor="post" color="gray.700">
+							یه چی بگو:
+						</FormLabel>
+						<Textarea
+							id="post"
+							value={post}
+							onChange={(e) => setPost(e.target.value)}
+							placeholder="یه چی"
+							size="sm"
+						/>
+					</FormControl>
+					<Button
+						type="submit"
+						variant="outline"
+						colorScheme="white"
+						mt="3"
+						isLoading={isPosting}
+					>
+						ارسال
+					</Button>
+				</form>
+				<InfinitePosts />
+			</Flex>
 		</Flex>
 	);
 };

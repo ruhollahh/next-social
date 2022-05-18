@@ -58,6 +58,7 @@ export const SelectableAvatar = forwardRef<
 				right="0"
 				height="40%"
 				bgColor="blackAlpha.700"
+				color="gray.100"
 				fontSize="12px"
 				userSelect="none"
 				_groupHover={{ display: "flex" }}
